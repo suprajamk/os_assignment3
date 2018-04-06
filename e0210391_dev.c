@@ -35,13 +35,8 @@ return 0; // always successful
 ssize_t onebyte_read(struct file *filep, char *buf, size_t count, loff_t *f_pos)
 {
 	if (*f_pos == 0) {
-	// at position 0, need to use copy_to_user
-	// because kernel space and user space
-	// are different
 		copy_to_user(buf, onebyte_data, 1);
-	// advance the f_pos
 		*f_pos += 1;
-	// return 1, since the device only have 1 byte
 		return 1;
 	} else {
 		return 0;
@@ -50,14 +45,10 @@ ssize_t onebyte_read(struct file *filep, char *buf, size_t count, loff_t *f_pos)
 ssize_t onebyte_write(struct file *filep, const char *buf, size_t count, loff_t *f_pos)
 {
 	if (*f_pos == 0) {
-	// Use copy_from_user due to pointer are in different
-	// address space
 		copy_from_user(onebyte_data, buf, 1);
-	// advance f_pos
 		*f_pos+=1;
 		return 1;
 	} else {
-	// no more space to write
 		return -ENOSPC;
 	}
 }
